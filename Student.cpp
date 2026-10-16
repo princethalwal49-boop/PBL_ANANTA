@@ -14,16 +14,17 @@ void copyText(char* destination, const char* source, int size) {
 }
 
 Student::Student() : id(0), semester(0), averageRating(0.0f), ratingCount(0), flagged(false), banned(false), manuallyBanned(false) {
-    name[0] = branch[0] = username[0] = password[0] = '\0';
+    name[0] = branch[0] = username[0] = password[0] = teachSkill[0] = '\0';
 }
 
 Student::Student(int studentId, const char* studentName, const char* studentBranch,
-                 int studentSemester, const char* user, const char* pass)
+                 int studentSemester, const char* user, const char* pass, const char* skill)
     : id(studentId), semester(studentSemester), averageRating(0.0f), ratingCount(0), flagged(false), banned(false), manuallyBanned(false) {
     copyText(name, studentName, 60);
     copyText(branch, studentBranch, 40);
     copyText(username, user, 30);
     copyText(password, pass, 30);
+    copyText(teachSkill, skill, 50);
 }
 
 int Student::getId() const { return id; }
@@ -32,6 +33,7 @@ const char* Student::getBranch() const { return branch; }
 int Student::getSemester() const { return semester; }
 const char* Student::getUsername() const { return username; }
 const char* Student::getPassword() const { return password; }
+const char* Student::getTeachSkill() const { return teachSkill; }
 bool Student::passwordMatches(const char* enteredPassword) const {
     return enteredPassword && strcmp(password, enteredPassword) == 0;
 }
@@ -58,6 +60,7 @@ void Student::displayProfile() const {
     cout << "Branch     : " << branch << "\n";
     cout << "Semester   : " << semester << "\n";
     cout << "Username   : " << username << "\n";
+    cout << "Can teach  : " << teachSkill << "\n";
     cout << "Rating     : " << fixed << setprecision(1) << averageRating << "/5.0\n";
 }
 
@@ -68,13 +71,13 @@ bool StudentManager::textIsValid(const char* text) const {
 }
 
 bool StudentManager::registerStudent(int id, const char* name, const char* branch, int semester,
-                                     const char* username, const char* password) {
+                                     const char* username, const char* password, const char* teachSkill) {
     if (studentCount >= MAX_STUDENTS || id <= 0 || semester < 1 || semester > 8 ||
-        !textIsValid(name) || !textIsValid(branch) || !textIsValid(username) || !textIsValid(password) ||
+        !textIsValid(name) || !textIsValid(branch) || !textIsValid(username) || !textIsValid(password) || !textIsValid(teachSkill) ||
         findById(id) || findByUsername(username)) {
         return false;
     }
-    students[studentCount++] = Student(id, name, branch, semester, username, password);
+    students[studentCount++] = Student(id, name, branch, semester, username, password, teachSkill);
     return true;
 }
 

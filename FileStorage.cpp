@@ -20,6 +20,7 @@ bool FileStorage::saveStudents(const Student students[], int count) {
              << students[i].getSemester() << '|'
              << students[i].getUsername() << '|'
              << students[i].getPassword() << '|'
+             << students[i].getTeachSkill() << '|'
              << students[i].isManuallyBanned() << '\n';
     }
     return file.good();
@@ -38,6 +39,7 @@ int FileStorage::loadStudents(Student students[], int maximumStudents) {
         char* semesterText = strtok(0, "|");
         char* username = strtok(0, "|");
         char* password = strtok(0, "|");
+        char* teachSkill = strtok(0, "|");
         char* manualBan = strtok(0, "|");
 
         if (!idText || !name || !branch || !semesterText || !username || !password) continue;
@@ -45,7 +47,7 @@ int FileStorage::loadStudents(Student students[], int maximumStudents) {
         int semester = atoi(semesterText);
         if (id <= 0 || semester < 1 || semester > 8) continue;
 
-        students[count] = Student(id, name, branch, semester, username, password);
+        students[count] = Student(id, name, branch, semester, username, password, teachSkill ? teachSkill : "");
         if (manualBan && atoi(manualBan) != 0) students[count].setManualBanned(true);
         ++count;
     }

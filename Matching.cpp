@@ -1,0 +1,4 @@
+#include "Matching.h"
+#include <cstring>
+void MatchingSystem::sort(Recommendation a[],int count)const{for(int p=0;p<count-1;p++)for(int i=0;i<count-p-1;i++)if(a[i].score<a[i+1].score){Recommendation t=a[i];a[i]=a[i+1];a[i+1]=t;}}
+int MatchingSystem::findMatches(Student* learner,StudentManager& students,const char* skill,Recommendation results[],int maximum)const{if(!learner||!skill||!results)return 0;int count=0;for(int i=0;i<students.getCount()&&count<maximum;i++){Student* candidate=students.getStudentAt(i);if(candidate!=learner&&!candidate->isBanned()&&strcmp(candidate->getTeachSkill(),skill)==0){results[count].student=candidate;float rating=candidate->getRatingCount()?candidate->getAverageRating():3.0f;results[count].score=50+(int)(rating*10);count++;}}sort(results,count);return count;}
