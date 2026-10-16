@@ -1,10 +1,8 @@
-# PeerLearn — File-Based Version
-
-This is a separate PeerLearn project. It uses simple manual graph and tree modules, but does not use hashing or STL containers.
+# PeerLearn 
 
 ## Completion status
 
-Approximately **90% of this file-based version** is complete.
+Approximately **60% of this project** is complete.
 
 Completed features:
 
@@ -91,6 +89,3 @@ g++ -std=c++11 -Wall -Wextra -pedantic main.cpp Student.cpp FileStorage.cpp Requ
 .\PeerLearnFileBased.exe
 ```
 
-## Verification note
-
-The installed MinGW compiler currently fails to start with an `Illegal System DLL Relocation` error. The code has been manually reviewed, but successful compilation has not yet been confirmed.
