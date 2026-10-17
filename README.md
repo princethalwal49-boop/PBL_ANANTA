@@ -54,17 +54,3 @@ On Linux or macOS, run:
 2. Compile the source files using the command above.
 3. Run the generated executable.
 4. Follow the console menu prompts and enter the requested number or text.
-
-## Notes
-
-- The program uses direct `cin` and `cout` input/output in `main.cpp`.
-- The current input flow is intended to stay simple and beginner-friendly.
-- This README describes the project structure and current reported progress; it does not claim that every listed feature is fully finished.
-
-## Next Steps
-
-- Complete the remaining approximately 40% of the implementation.
-- Test each module and its interactions.
-- Verify text-file reading and writing.
-- Test the complete menu flow and fix any bugs.
-- Update this README as features are completed.
