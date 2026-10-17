@@ -4,7 +4,13 @@
 #include "Student.h"
 #include "RequestQueue.h"
 
-struct RatingRecord { int raterId; int ratedId; int score; RatingRecord* next; };
+struct RatingRecord 
+{ 
+    int raterId; 
+    int ratedId; 
+    int score; 
+    RatingRecord* next; 
+};
 
 class RatingSystem {
 private:

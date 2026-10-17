@@ -7,11 +7,13 @@ using namespace std;
 
 const char* STUDENT_FILE = "students.txt";
 
-bool FileStorage::saveStudents(const Student students[], int count) {
+bool FileStorage::saveStudents(const Student students[], int count) 
+{
     ofstream file(STUDENT_FILE);
     if (!file) return false;
 
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i) 
+    {
         file << students[i].getId() << '|'
              << students[i].getName() << '|'
              << students[i].getBranch() << '|'
@@ -24,13 +26,15 @@ bool FileStorage::saveStudents(const Student students[], int count) {
     return file.good();
 }
 
-int FileStorage::loadStudents(Student students[], int maximumStudents) {
+int FileStorage::loadStudents(Student students[], int maximumStudents) 
+{
     ifstream file(STUDENT_FILE);
     if (!file) return 0;
 
     int count = 0;
     char line[300];
-    while (file.getline(line, 300) && count < maximumStudents) {
+    while (file.getline(line, 300) && count < maximumStudents) 
+    {
         char* idText = strtok(line, "|");
         char* name = strtok(0, "|");
         char* branch = strtok(0, "|");

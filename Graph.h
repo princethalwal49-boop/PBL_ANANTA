@@ -2,8 +2,13 @@
 #define GRAPH_H
 
 const int MAX_GRAPH_STUDENTS = 100;
-struct GraphNode { int id; GraphNode* next; };
-class StudentGraph {
+struct GraphNode 
+{ 
+    int id; 
+    GraphNode* next; 
+};
+class StudentGraph 
+{
 private:
     int ids[MAX_GRAPH_STUDENTS];
     GraphNode* links[MAX_GRAPH_STUDENTS];

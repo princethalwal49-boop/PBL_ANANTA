@@ -1,9 +1,15 @@
 #ifndef SKILLTREE_H
 #define SKILLTREE_H
 
-struct SkillNode { char name[50]; SkillNode* child; SkillNode* sibling; };
+struct SkillNode 
+{ 
+    char name[50]; 
+    SkillNode* child; 
+    SkillNode* sibling; 
+};
 
-class SkillTree {
+class SkillTree 
+{
 private:
     SkillNode* root;
     SkillNode* create(const char* name);

@@ -5,7 +5,8 @@ const int MAX_REQUESTS = 100;
 
 enum RequestStatus { PENDING, ACCEPTED, REJECTED };
 
-struct LearningRequest {
+struct LearningRequest 
+{
     int id;
     int senderId;
     int receiverId;

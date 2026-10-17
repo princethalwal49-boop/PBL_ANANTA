@@ -1,8 +1,13 @@
 #ifndef MATCHING_H
 #define MATCHING_H
 #include "Student.h"
-struct Recommendation { Student* student; int score; };
-class MatchingSystem {
+struct Recommendation 
+{ 
+    Student* student; 
+    int score; 
+};
+class MatchingSystem 
+{
 private:
     void sort(Recommendation results[],int count) const;
 public:
