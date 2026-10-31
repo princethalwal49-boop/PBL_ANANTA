@@ -263,6 +263,7 @@ int main()
     r.recalculate(s);
     tree.loadDefaultSkills();
     for(int i=0;i<s.getCount();++i)graph.addStudent(s.getStudentAt(i)->getId());
+    graph.loadFromFile();
     LearningRequest accepted[MAX_REQUESTS];
     int acceptedCount=q.getAll(accepted,MAX_REQUESTS);
     for(int i=0;i<acceptedCount;++i)
@@ -293,6 +294,7 @@ int main()
         }else
         {
             saveAll(s,q,r);
+            graph.saveToFile();
             cout<<"All data saved.\n";
             return 0;
         }

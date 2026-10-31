@@ -1,56 +1,83 @@
-# PeerLearn File-Based
+# PeerLearn — File-Based Peer Learning Platform
 
-**Project status: Approximately 60% complete**
+PeerLearn is a console-based C++ application that helps students find suitable peers to learn from, manage learning requests, rate completed sessions, and administer the platform. It is designed as a data-structures project: fixed arrays, linked lists, a tree, an undirected graph, a hash index, and text-file persistence are all used deliberately.
 
-PeerLearn File-Based is a beginner-friendly, console-based C++ project designed to support peer learning and student collaboration. It uses core data structures and text-file storage to keep the implementation approachable for students learning C++.
+## Features
 
-## Basic Details
+- Student registration and login with unique student IDs and usernames.
+- Student profiles showing branch, semester, teachable skills, and rating.
+- Fast teacher recommendations for a requested skill.
+- Learning requests that can be accepted or rejected by the receiving student.
+- Peer ratings, permitted only after an accepted learning request.
+- Automatic flagging and banning for consistently poor ratings; administrators can also ban or unban manually.
+- Administrator views for students, requests, and ratings, plus student removal.
+- A hierarchical skill tree for browsing the supported learning areas.
+- A student connection graph, including connections created by accepted learning requests.
+- Persistent student, request, rating, and graph connection data.
+- Seeded demo data that demonstrates all major workflows immediately.
 
-- **Language:** C++ (C++11)
-- **Interface:** Console-based
-- **Storage:** Text files
-- **Current progress:** About 60% of the code has been completed
-- **Build approach:** Compile the project source files together using `g++`
+## Data structures used
 
-## Planned and Implemented Components
+- **Fixed array**: stores up to 100 students.
+- **Linked queue**: stores learning requests in submission order.
+- **Linked list**: stores rating records.
+- **General tree**: stores the skill hierarchy using child/sibling links.
+- **Undirected adjacency-list graph**: stores student connections.
+- **Hash index**: maps normalized skills directly to students who teach them.
 
-The project is structured around these components:
+## Fast matching algorithm
 
-- **Fixed arrays:** Store simple collections of data.
-- **Linked lists:** Manage data using linked-list structures.
-- **Skill tree:** Represent skills and their relationships in a simple tree.
-- **Student graph:** Model connections between students.
-- **Matching:** Support matching students based on relevant information.
-- **Request queue:** Organize incoming requests.
-- **Ratings:** Handle rating-related functionality.
-- **Admin module:** Provide basic administrative operations.
-- **File storage:** Read and write project data using text files.
+The matcher does not scan every student for every search. It creates a cached hash index when the student list changes (loaded, registered, or removed). Skills are normalized to lower case and comma-separated entries such as `C++, Python` are indexed separately.
 
-> **Progress note:** The project is approximately 60% complete. Some modules or workflows may still be under development, testing, or integration. The exact completion status can change as implementation continues.
+For a query, the requested skill is hashed directly to the relevant candidate chain. Only those candidates are scored and ranked. Average lookup cost is **O(1 + k)**, where `k` is the number of teachers for that skill. Rebuilding the index costs **O(t)** only after student data changes, where `t` is the total number of entered skills.
 
-## Build
+Recommendations use rating, branch similarity, and semester proximity. Banned accounts are never recommended.
 
-Make sure a C++ compiler such as `g++` is installed and available in your terminal. From the directory containing the source files, run:
+## Demo credentials
 
-```bash
-g++ -std=c++11 main.cpp Student.cpp FileStorage.cpp RequestQueue.cpp Rating.cpp Admin.cpp SkillTree.cpp Graph.cpp Matching.cpp -o PeerLearnFileBased
+Student account:
+
+```text
+Username: aarav
+Password: pass123
 ```
 
-On Windows, run the generated executable with:
+Administrator account:
+
+```text
+Username: admin
+Password: admin123
+```
+
+The demo contains ten students, accepted/rejected/pending requests, ratings, and graph relationships. Search for `Python` while logged in as Aarav to see the ranked matching flow.
+
+## Build and run
+
+From the project directory, compile with a C++11-compatible compiler:
 
 ```powershell
+g++ -std=c++11 -Wall -Wextra -pedantic main.cpp Student.cpp FileStorage.cpp RequestQueue.cpp Rating.cpp Admin.cpp SkillTree.cpp Graph.cpp Matching.cpp -o PeerLearnFileBased.exe
 .\PeerLearnFileBased.exe
 ```
 
-On Linux or macOS, run:
+## Persistent files
 
-```bash
-./PeerLearnFileBased
-```
+- `students.txt` — profile, account, skill, and manual-ban data.
+- `requests.txt` — learning requests and their statuses.
+- `ratings.txt` — peer rating records.
+- `connections.txt` — graph connections, created after graph data is saved.
 
-## Running the Program
+All records use `|` as the separator, so user text cannot contain that character.
 
-1. Open a terminal in the project directory.
-2. Compile the source files using the command above.
-3. Run the generated executable.
-4. Follow the console menu prompts and enter the requested number or text.
+## Typical workflow
+
+1. Log in with a demo student account.
+2. Open **Get matches** and request a skill such as `Python` or `C++`.
+3. Send a request to a recommended teacher.
+4. Log in as the receiving student and accept or reject it.
+5. After acceptance, either participant can rate the other once.
+6. Log in as the administrator to inspect data and manage accounts.
+
+## Project limits
+
+This is an educational console project. It uses a maximum of 100 students and stores passwords in plain text for simplicity; a production system must use secure password hashing, a database, access logging, and stronger authorization controls.
