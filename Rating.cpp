@@ -18,9 +18,10 @@ bool RatingSystem::alreadyRated(int raterId, int ratedId) const
     } 
     return false; 
 }
-bool RatingSystem::submit(int raterId, Student& ratedStudent, int score, const RequestQueue& requests) 
+bool RatingSystem::submit(int raterId, Student& ratedStudent, int score, const RequestQueue& requests, const StudentGraph& graph) 
 {
-    if (score < 1 || score > 5 || raterId == ratedStudent.getId() || alreadyRated(raterId, ratedStudent.getId()) || !requests.hasAcceptedPair(raterId, ratedStudent.getId())) return false;
+    if (score < 1 || score > 5 || raterId == ratedStudent.getId() || alreadyRated(raterId, ratedStudent.getId()) ||
+        !requests.hasAcceptedPair(raterId, ratedStudent.getId()) || !graph.areConnected(raterId, ratedStudent.getId())) return false;
     RatingRecord* node = new RatingRecord; 
     node->raterId = raterId; 
     node->ratedId = ratedStudent.getId(); 
@@ -76,8 +77,9 @@ void RatingSystem::recalculate(StudentManager& manager) const
     for (int i = 0; i < manager.getCount(); ++i) 
     { 
         Student* student = manager.getStudentAt(i); 
-        student->setFlagged(student->getRatingCount() >= 3 && student->getAverageRating() <= 2.0f); 
-        student->setBanned(student->getRatingCount() >= 3 && student->getAverageRating() <= 1.0f); 
+        // A student is warned before an automatic ban can occur.
+        student->setFlagged(student->getRatingCount() >= 2 && student->getAverageRating() <= 2.5f); 
+        student->setBanned(student->getRatingCount() >= 4 && student->getAverageRating() <= 1.5f); 
     }
 }
 bool RatingSystem::saveToFile() const 

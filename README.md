@@ -8,7 +8,8 @@ PeerLearn is a console-based C++ application that helps students find suitable p
 - Student profiles showing branch, semester, teachable skills, and rating.
 - Fast teacher recommendations for a requested skill.
 - Learning requests that can be accepted or rejected by the receiving student.
-- Peer ratings, permitted only after an accepted learning request.
+- Peer ratings, permitted only after an accepted learning request has created a graph connection between the two students.
+- Peer reporting for connected learning partners, with an administrator review and ban option.
 - Automatic flagging and banning for consistently poor ratings; administrators can also ban or unban manually.
 - Administrator views for students, requests, and ratings, plus student removal.
 - A hierarchical skill tree for browsing the supported learning areas.
@@ -56,7 +57,7 @@ The demo contains ten students, accepted/rejected/pending requests, ratings, and
 From the project directory, compile with a C++11-compatible compiler:
 
 ```powershell
-g++ -std=c++11 -Wall -Wextra -pedantic main.cpp Student.cpp FileStorage.cpp RequestQueue.cpp Rating.cpp Admin.cpp SkillTree.cpp Graph.cpp Matching.cpp -o PeerLearnFileBased.exe
+g++ -std=c++11 -Wall -Wextra -pedantic main.cpp Student.cpp FileStorage.cpp RequestQueue.cpp Rating.cpp Report.cpp Admin.cpp SkillTree.cpp Graph.cpp Matching.cpp -o PeerLearnFileBased.exe
 .\PeerLearnFileBased.exe
 ```
 
@@ -66,8 +67,13 @@ g++ -std=c++11 -Wall -Wextra -pedantic main.cpp Student.cpp FileStorage.cpp Requ
 - `requests.txt` — learning requests and their statuses.
 - `ratings.txt` — peer rating records.
 - `connections.txt` — graph connections, created after graph data is saved.
+- `reports.txt` — peer reports submitted for administrator review.
 
 All records use `|` as the separator, so user text cannot contain that character.
+
+## Rating safety policy
+
+Students receive a visible warning after at least two ratings with an average of `2.5/5` or lower. They are automatically banned after at least four ratings with an average of `1.5/5` or lower. Administrators may ban or unban accounts manually, including after reviewing peer reports.
 
 ## Typical workflow
 

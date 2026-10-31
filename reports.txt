@@ -1,0 +1,2 @@
+2|109|102|Tutor was late
+1|101|102|Missed two scheduled Python sessions without informing me

@@ -3,6 +3,7 @@
 
 #include "Student.h"
 #include "RequestQueue.h"
+#include "Graph.h"
 
 struct RatingRecord 
 { 
@@ -19,7 +20,7 @@ private:
 public:
     RatingSystem();
     ~RatingSystem();
-    bool submit(int raterId, Student& ratedStudent, int score, const RequestQueue& requests);
+    bool submit(int raterId, Student& ratedStudent, int score, const RequestQueue& requests, const StudentGraph& graph);
     int getAll(RatingRecord results[], int maximum) const;
     void removeForStudent(int studentId);
     void recalculate(StudentManager& manager) const;

@@ -9,6 +9,7 @@
 #include "SkillTree.h"
 #include "Graph.h"
 #include "Matching.h"
+#include "Report.h"
 using namespace std;
 int readInt(const char* p,int minimum,int maximum)
 {
@@ -95,12 +96,12 @@ void matchingMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,
             cout<<"Request sent.\n";
         }
     }
-void studentMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,SkillTree& tree,StudentGraph& graph,MatchingSystem& m)
+void studentMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,ReportSystem& reports,SkillTree& tree,StudentGraph& graph,MatchingSystem& m)
 {
     while(true)
     {
-        cout<<"\n1.Profile\n2.Send request\n3.Respond requests\n4.Rate peer\n5.Add graph connection\n6.My graph connections\n7.View skill tree\n8.Get matches\n9.Logout\n";
-        int c=readInt("Choice: ",1,9);
+        cout<<"\n1.Profile\n2.Send request\n3.Respond requests\n4.Rate connected peer\n5.Add graph connection\n6.My graph connections\n7.View skill tree\n8.Get matches\n9.Report connected peer\n10.Logout\n";
+        int c=readInt("Choice: ",1,10);
         if(c==1)me->displayProfile();
         else if(c==2)
         {
@@ -122,6 +123,13 @@ void studentMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,S
                 int reply=readInt("1.Accept 2.Reject: ",1,2);
                 if(q.respond(id,me->getId(),reply==1))
                 {
+                    if(reply==1)
+                    {
+                        LearningRequest requests[MAX_REQUESTS];
+                        int count=q.getAll(requests,MAX_REQUESTS);
+                        for(int i=0;i<count;++i)
+                            if(requests[i].id==id)graph.connect(requests[i].senderId,requests[i].receiverId);
+                    }
                     saveAll(s,q,r);
                     cout<<"Saved.\n";
                 }else cout<<"Request not found.\n";
@@ -131,7 +139,7 @@ void studentMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,S
             int id=readInt("Accepted peer ID: ",1,999999);
             Student* peer=s.findById(id);
             int score=readInt("Score 1-5: ",1,5);
-            if(peer&&r.submit(me->getId(),*peer,score,q))
+            if(peer&&r.submit(me->getId(),*peer,score,q,graph))
             {
                 r.recalculate(s);
                 saveAll(s,q,r);
@@ -144,6 +152,18 @@ void studentMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,S
         }else if(c==6)graph.display(me->getId());
         else if(c==7)tree.display();
         else if(c==8)matchingMenu(me,s,q,r,m);
+        else if(c==9)
+        {
+            int id=readInt("Connected peer ID: ",1,999999);
+            char reason[100];
+            readText("Report reason: ",reason,100);
+            if(s.findById(id)&&q.hasAcceptedPair(me->getId(),id)&&graph.areConnected(me->getId(),id)&&reports.submit(me->getId(),id,reason))
+            {
+                reports.saveToFile();
+                cout<<"Report submitted for admin review.\n";
+            }
+            else cout<<"Report failed. You can report only a connected peer once you have learned together.\n";
+        }
         else return;
     }
 }
@@ -187,41 +207,74 @@ void showRatings(StudentManager& s,const RatingSystem& r)
         cout<<(x?x->getName():"Removed")<<" rated "<<(y?y->getName():"Removed")<<" "<<a[i].score<<"/5\n";
     }
 }
-void adminMenu(StudentManager& s,RequestQueue& q,RatingSystem& r)
+void showReports(StudentManager& s,const ReportSystem& reports)
+{
+    PeerReport a[MAX_REPORTS];
+    int c=reports.getAll(a,MAX_REPORTS);
+    if(!c)
+    {
+        cout<<"No peer reports.\n";
+        return;
+    }
+    for(int i=0;i<c;++i)
+    {
+        Student* from=s.findById(a[i].reporterId);
+        Student* against=s.findById(a[i].reportedId);
+        cout<<a[i].id<<" | "<<(from?from->getName():"Removed")<<" reported "<<(against?against->getName():"Removed")<<" (ID "<<a[i].reportedId<<") | "<<a[i].reason<<"\n";
+    }
+}
+void adminMenu(StudentManager& s,RequestQueue& q,RatingSystem& r,ReportSystem& reports)
 {
     while(true)
     {
-        cout<<"\n1.Students\n2.Requests\n3.Ratings\n4.Ban\n5.Unban\n6.Remove student\n7.Logout\n";
-        int c=readInt("Choice: ",1,7);
+        cout<<"\n1.Students\n2.Requests\n3.Ratings\n4.Peer reports\n5.Ban\n6.Unban\n7.Remove student\n8.Logout\n";
+        int c=readInt("Choice: ",1,8);
         if(c==1)showStudents(s);
         else if(c==2)showRequests(s,q);
         else if(c==3)showRatings(s,r);
-        else if(c==4||c==5)
+        else if(c==4)
+        {
+            showReports(s,reports);
+            int id=readInt("Reported student ID to ban (0 back): ",0,999999);
+            if(id)
+            {
+                Student* x=s.findById(id);
+                if(x)
+                {
+                    x->setManualBanned(true);
+                    saveAll(s,q,r);
+                    cout<<"Reported student banned.\n";
+                }else cout<<"Not found.\n";
+            }
+        }
+        else if(c==5||c==6)
         {
             Student* x=s.findById(readInt("Student ID: ",1,999999));
             if(x)
             {
-                x->setManualBanned(c==4);
-                x->setFlagged(c==4);
+                x->setManualBanned(c==5);
+                x->setFlagged(c==5);
                 saveAll(s,q,r);
                 cout<<"Status updated.\n";
             }else cout<<"Not found.\n";
-        }else if(c==6)
+        }else if(c==7)
         {
             int id=readInt("Student ID: ",1,999999);
             if(s.findById(id)&&readInt("1.Remove 2.Cancel: ",1,2)==1)
             {
                 q.removeForStudent(id);
                 r.removeForStudent(id);
+                reports.removeForStudent(id);
                 s.removeById(id);
                 r.recalculate(s);
                 saveAll(s,q,r);
+                reports.saveToFile();
                 cout<<"Removed.\n";
             }
         }else return;
     }
 }
-void addDemoData(StudentManager& s,RequestQueue& q,RatingSystem& r)
+void addDemoData(StudentManager& s,RequestQueue& q,RatingSystem& r,StudentGraph& graph)
 {
     if(s.getCount())return;
     s.registerStudent(101,"Aarav Sharma","CSE",3,"aarav","pass123","C++, Python");
@@ -234,16 +287,18 @@ void addDemoData(StudentManager& s,RequestQueue& q,RatingSystem& r)
     s.registerStudent(108,"Isha Nair","IT",5,"isha","pass123","React, JavaScript");
     s.registerStudent(109,"Kunal Verma","CSE",4,"kunal","pass123","SQL, Python");
     s.registerStudent(110,"Sneha Rao","ECE",2,"sneha","pass123","C++, Queue");
+    for(int i=0;i<s.getCount();++i)graph.addStudent(s.getStudentAt(i)->getId());
     q.send(101,102,"Python"); q.respond(1,102,true);
     q.send(104,102,"Python"); q.respond(2,102,true);
     q.send(105,103,"Data Structures"); q.respond(3,103,true);
     q.send(106,104,"Java"); q.respond(4,104,true);
     q.send(107,108,"React"); q.respond(5,108,false);
     q.send(109,102,"Python");
-    r.submit(101,*s.findById(102),5,q);
-    r.submit(104,*s.findById(102),4,q);
-    r.submit(105,*s.findById(103),5,q);
-    r.submit(106,*s.findById(104),4,q);
+    graph.connect(101,102); graph.connect(104,102); graph.connect(105,103); graph.connect(106,104);
+    r.submit(101,*s.findById(102),5,q,graph);
+    r.submit(104,*s.findById(102),4,q,graph);
+    r.submit(105,*s.findById(103),5,q,graph);
+    r.submit(106,*s.findById(104),4,q,graph);
     r.recalculate(s);
     saveAll(s,q,r);cout<<"Demo data added. Student login: aarav/pass123; admin login: admin/admin123\n";
 }
@@ -256,10 +311,12 @@ int main()
     SkillTree tree;
     StudentGraph graph;
     MatchingSystem m;
+    ReportSystem reports;
     s.loadFromFile();
     q.loadFromFile();
     r.loadFromFile();
-    addDemoData(s,q,r);
+    reports.loadFromFile();
+    addDemoData(s,q,r,graph);
     r.recalculate(s);
     tree.loadDefaultSkills();
     for(int i=0;i<s.getCount();++i)graph.addStudent(s.getStudentAt(i)->getId());
@@ -282,18 +339,23 @@ int main()
             readText("Username: ",u,30);
             readText("Password: ",p,30);
             Student* x=s.login(u,p);
-            if(x&&!x->isBanned())studentMenu(x,s,q,r,tree,graph,m);
+            if(x&&!x->isBanned())
+            {
+                if(x->isFlagged())cout<<"WARNING: Your rating is low. Improve future peer-learning sessions to avoid an automatic ban.\n";
+                studentMenu(x,s,q,r,reports,tree,graph,m);
+            }
             else cout<<"Invalid login or banned.\n";
         }else if(c==3)
         {
             char u[30],p[30];
             readText("Admin username: ",u,30);
             readText("Admin password: ",p,30);
-            if(a.login(u,p))adminMenu(s,q,r);
+            if(a.login(u,p))adminMenu(s,q,r,reports);
             else cout<<"Invalid admin.\n";
         }else
         {
             saveAll(s,q,r);
+            reports.saveToFile();
             graph.saveToFile();
             cout<<"All data saved.\n";
             return 0;

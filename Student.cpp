@@ -117,6 +117,8 @@ void Student::displayProfile() const
     cout << "Username   : " << username << "\n";
     cout << "Can teach  : " << teachSkill << "\n";
     cout << "Rating     : " << fixed << setprecision(1) << averageRating << "/5.0\n";
+    if (flagged && !isBanned()) cout << "Warning    : Your rating is low. Improve future sessions to avoid a ban.\n";
+    if (isBanned()) cout << "Status     : Banned\n";
 }
 
 StudentManager::StudentManager() : studentCount(0), revision(0) {}
