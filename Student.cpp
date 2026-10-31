@@ -119,7 +119,7 @@ void Student::displayProfile() const
     cout << "Rating     : " << fixed << setprecision(1) << averageRating << "/5.0\n";
 }
 
-StudentManager::StudentManager() : studentCount(0) {}
+StudentManager::StudentManager() : studentCount(0), revision(0) {}
 
 bool StudentManager::textIsValid(const char* text) const 
 {
@@ -134,6 +134,7 @@ bool StudentManager::registerStudent(int id, const char* name, const char* branc
         return false;
     }
     students[studentCount++] = Student(id, name, branch, semester, username, password, teachSkill);
+    ++revision;
     return true;
 }
 
@@ -173,6 +174,7 @@ bool StudentManager::removeById(int id)
             for (int j = i; j < studentCount - 1; ++j) students[j] = students[j + 1];
             --studentCount;
             students[studentCount] = Student();
+            ++revision;
             return true;
         }
     }
@@ -183,10 +185,15 @@ int StudentManager::getCount() const
 { 
     return studentCount; 
 }
+int StudentManager::getRevision() const
+{
+    return revision;
+}
 
 bool StudentManager::loadFromFile() 
 {
     studentCount = FileStorage::loadStudents(students, MAX_STUDENTS);
+    ++revision;
     return studentCount >= 0;
 }
 

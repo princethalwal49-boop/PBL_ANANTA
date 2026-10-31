@@ -93,12 +93,14 @@ bool RatingSystem::saveToFile() const
 }
 bool RatingSystem::loadFromFile() 
 { 
+    clear();
     ifstream file("ratings.txt"); 
     if (!file) return true; 
     int rater, rated, score; 
-    char divider; 
-    while (file >> rater >> divider >> rated >> divider >> score) 
+    char firstDivider, secondDivider; 
+    while (file >> rater >> firstDivider >> rated >> secondDivider >> score) 
     { 
+        if (firstDivider != '|' || secondDivider != '|' || rater <= 0 || rated <= 0 || rater == rated || score < 1 || score > 5 || alreadyRated(rater, rated)) continue;
         RatingRecord* node = new RatingRecord; 
         node->raterId = rater; 
         node->ratedId = rated; 

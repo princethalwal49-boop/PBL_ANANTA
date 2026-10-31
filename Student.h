@@ -48,6 +48,7 @@ class StudentManager {
 private:
     Student students[MAX_STUDENTS];
     int studentCount;
+    int revision;
 
     bool textIsValid(const char* text) const;
 
@@ -62,6 +63,7 @@ public:
     Student* getStudentAt(int index);
     bool removeById(int id);
     int getCount() const;
+    int getRevision() const;
 
     bool loadFromFile();
     bool saveToFile() const;

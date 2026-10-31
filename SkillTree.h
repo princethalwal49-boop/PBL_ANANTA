@@ -22,6 +22,7 @@ public:
     void loadDefaultSkills();
     bool add(const char* parent, const char* name);
     bool contains(const char* name) const;
+    bool isValidSkill(const char* name) const;
     void display() const;
 };
 

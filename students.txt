@@ -1,4 +1,10 @@
-101|Aarav Sharma|CSE|3|aarav|pass123|C++|0
-102|Diya Singh|CSE|4|diya|pass123|python|0
-103|Kabir Khan|CSE|3|kabir|pass123|Data Structures|0
-25101|Prince|CSE|3|prince|prince75|cpp, python, java|1
+101|Aarav Sharma|CSE|3|aarav|pass123|C++, Python|0
+102|Diya Singh|CSE|4|diya|pass123|Python, SQL|0
+103|Kabir Khan|CSE|3|kabir|pass123|Data Structures, C++|0
+104|Meera Iyer|CSE|5|meera|pass123|Java, C++|0
+105|Rohan Patel|IT|4|rohan|pass123|Web Development, JavaScript|0
+106|Ananya Gupta|CSE|2|ananya|pass123|UI UX, HTML CSS|0
+107|Vikram Das|ECE|3|vikram|pass123|Python, Data Structures|0
+108|Isha Nair|IT|5|isha|pass123|React, JavaScript|0
+109|Kunal Verma|CSE|4|kunal|pass123|SQL, Python|0
+110|Sneha Rao|ECE|2|sneha|pass123|C++, Queue|0

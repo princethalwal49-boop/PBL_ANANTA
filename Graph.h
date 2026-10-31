@@ -19,8 +19,12 @@ public:
     StudentGraph();
     ~StudentGraph();
     bool addStudent(int id);
+    bool removeStudent(int id);
     bool connect(int firstId,int secondId);
+    bool areConnected(int firstId, int secondId) const;
     void display(int id) const;
+    bool loadFromFile();
+    bool saveToFile() const;
 };
 
 #endif

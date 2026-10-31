@@ -1,4 +1,7 @@
 #include <iostream>
+#include <cstdlib>
+#include <cctype>
+#include <limits>
 #include "Student.h"
 #include "Admin.h"
 #include "RequestQueue.h"
@@ -7,13 +10,25 @@
 #include "Graph.h"
 #include "Matching.h"
 using namespace std;
-int readInt(const char* p,int,int)
+int readInt(const char* p,int minimum,int maximum)
 {
-    int x;
-    cout<<p;
-    cin>>x;
-    cin.ignore();
-    return x;
+    char line[64];
+    while(true)
+    {
+        cout<<p;
+        if(!cin.getline(line,64))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout<<"Please enter a number.\n";
+            continue;
+        }
+        char* end=0;
+        long value=strtol(line,&end,10);
+        while(end&&*end&&isspace(static_cast<unsigned char>(*end)))++end;
+        if(end&&*end=='\0'&&value>=minimum&&value<=maximum)return static_cast<int>(value);
+        cout<<"Enter a value from "<<minimum<<" to "<<maximum<<".\n";
+    }
 }
 void readText(const char* p,char* t,int n)
 {
@@ -72,7 +87,8 @@ void matchingMenu(Student* me,StudentManager& s,RequestQueue& q,RatingSystem& r,
         return;
     }
     for(int i=0;i<count;i++)
-        cout<<i+1<<". "<<a[i].student->getName()<<" | "<<a[i].student->getTeachSkill()<<" | Score "<<a[i].score<<"\n";int pick=readInt("Send request to number (0 back): ",0,count);
+        cout<<i+1<<". "<<a[i].student->getName()<<" | "<<a[i].student->getTeachSkill()<<" | Score "<<a[i].score<<"\n";
+    int pick=readInt("Send request to number (0 back): ",0,count);
         if(pick&&q.send(me->getId(),a[pick-1].student->getId(),skill))
         {
             saveAll(s,q,r);
@@ -208,10 +224,28 @@ void adminMenu(StudentManager& s,RequestQueue& q,RatingSystem& r)
 void addDemoData(StudentManager& s,RequestQueue& q,RatingSystem& r)
 {
     if(s.getCount())return;
-    s.registerStudent(101,"Aarav Sharma","CSE",3,"aarav","pass123","C++");
-    s.registerStudent(102,"Diya Singh","CSE",4,"diya","pass123","Python");
-    s.registerStudent(103,"Kabir Khan","CSE",3,"kabir","pass123","Data Structures");
-    saveAll(s,q,r);cout<<"Demo students added. Login: aarav/pass123, diya/pass123, kabir/pass123\n";
+    s.registerStudent(101,"Aarav Sharma","CSE",3,"aarav","pass123","C++, Python");
+    s.registerStudent(102,"Diya Singh","CSE",4,"diya","pass123","Python, SQL");
+    s.registerStudent(103,"Kabir Khan","CSE",3,"kabir","pass123","Data Structures, C++");
+    s.registerStudent(104,"Meera Iyer","CSE",5,"meera","pass123","Java, C++");
+    s.registerStudent(105,"Rohan Patel","IT",4,"rohan","pass123","Web Development, JavaScript");
+    s.registerStudent(106,"Ananya Gupta","CSE",2,"ananya","pass123","UI UX, HTML CSS");
+    s.registerStudent(107,"Vikram Das","ECE",3,"vikram","pass123","Python, Data Structures");
+    s.registerStudent(108,"Isha Nair","IT",5,"isha","pass123","React, JavaScript");
+    s.registerStudent(109,"Kunal Verma","CSE",4,"kunal","pass123","SQL, Python");
+    s.registerStudent(110,"Sneha Rao","ECE",2,"sneha","pass123","C++, Queue");
+    q.send(101,102,"Python"); q.respond(1,102,true);
+    q.send(104,102,"Python"); q.respond(2,102,true);
+    q.send(105,103,"Data Structures"); q.respond(3,103,true);
+    q.send(106,104,"Java"); q.respond(4,104,true);
+    q.send(107,108,"React"); q.respond(5,108,false);
+    q.send(109,102,"Python");
+    r.submit(101,*s.findById(102),5,q);
+    r.submit(104,*s.findById(102),4,q);
+    r.submit(105,*s.findById(103),5,q);
+    r.submit(106,*s.findById(104),4,q);
+    r.recalculate(s);
+    saveAll(s,q,r);cout<<"Demo data added. Student login: aarav/pass123; admin login: admin/admin123\n";
 }
 int main()
 {
@@ -229,6 +263,10 @@ int main()
     r.recalculate(s);
     tree.loadDefaultSkills();
     for(int i=0;i<s.getCount();++i)graph.addStudent(s.getStudentAt(i)->getId());
+    LearningRequest accepted[MAX_REQUESTS];
+    int acceptedCount=q.getAll(accepted,MAX_REQUESTS);
+    for(int i=0;i<acceptedCount;++i)
+        if(accepted[i].status==ACCEPTED)graph.connect(accepted[i].senderId,accepted[i].receiverId);
     while(true)
     {
         cout<<"\n1.Register\n2.Student login\n3.Admin login\n4.Exit\n";

@@ -63,7 +63,11 @@ bool SkillTree::add(const char* parent,const char* name)
 }
 bool SkillTree::contains(const char* name)const
 {
-    return find(root,name)!=0;
+    return name&&name[0]&&find(root,name)!=0;
+}
+bool SkillTree::isValidSkill(const char* name) const
+{
+    return contains(name);
 }
 void SkillTree::display()const
 {
@@ -77,8 +81,17 @@ void SkillTree::loadDefaultSkills()
     add("Computer Science","Programming");
     add("Programming","C++");
     add("Programming","Python");
+    add("Programming","Java");
+    add("Programming","JavaScript");
     add("Computer Science","Data Structures");
     add("Data Structures","Array");
     add("Data Structures","Linked List");
     add("Data Structures","Queue");
+    add("Computer Science","Web Development");
+    add("Web Development","HTML CSS");
+    add("Web Development","React");
+    add("Computer Science","Databases");
+    add("Databases","SQL");
+    add("Computer Science","Design");
+    add("Design","UI UX");
 }

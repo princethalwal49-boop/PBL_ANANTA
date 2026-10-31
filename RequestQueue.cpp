@@ -14,6 +14,9 @@ RequestQueue::~RequestQueue()
 bool RequestQueue::send(int senderId, int receiverId, const char* topic) 
 {
     if (senderId <= 0 || receiverId <= 0 || senderId == receiverId || !topic || topic[0] == '\0' || strchr(topic, '|')) return false;
+    for (LearningRequest* current = front; current; current = current->next)
+        if (current->senderId == senderId && current->receiverId == receiverId &&
+            current->status == PENDING && strcmp(current->topic, topic) == 0) return false;
     LearningRequest* node = new LearningRequest;
     node->id = nextId++; 
     node->senderId = senderId; 
@@ -122,6 +125,8 @@ bool RequestQueue::saveToFile() const
 
 bool RequestQueue::loadFromFile() 
 {
+    clear();
+    nextId = 1;
     ifstream file("requests.txt"); 
     if (!file) return true;
     char line[200];
@@ -133,13 +138,19 @@ bool RequestQueue::loadFromFile()
         char* topic = strtok(0, "|"); 
         char* status = strtok(0, "|");
         if (!id || !sender || !receiver || !topic || !status) continue;
+        int requestId = atoi(id);
+        int senderId = atoi(sender);
+        int receiverId = atoi(receiver);
+        int requestStatus = atoi(status);
+        if (requestId <= 0 || senderId <= 0 || receiverId <= 0 || senderId == receiverId ||
+            topic[0] == '\0' || requestStatus < PENDING || requestStatus > REJECTED) continue;
         LearningRequest* node = new LearningRequest;
-        node->id = atoi(id); 
-        node->senderId = atoi(sender); 
-        node->receiverId = atoi(receiver); 
+        node->id = requestId; 
+        node->senderId = senderId; 
+        node->receiverId = receiverId; 
         strncpy(node->topic, topic, 49); 
         node->topic[49] = '\0'; 
-        node->status = (RequestStatus)atoi(status); 
+        node->status = (RequestStatus)requestStatus; 
         node->next = 0;
         if (!rear) front = rear = node; 
         else 
