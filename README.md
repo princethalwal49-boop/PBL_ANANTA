@@ -19,7 +19,7 @@ PeerLearn is a console-based C++ application that helps students find suitable p
 
 ## Data structures used
 
-- **Fixed array**: stores up to 100 students.
+- **Array**: stores up to 100 students.
 - **Linked queue**: stores learning requests in submission order.
 - **Linked list**: stores rating records.
 - **General tree**: stores the skill hierarchy using child/sibling links.
@@ -83,7 +83,3 @@ Students receive a visible warning after at least two ratings with an average of
 4. Log in as the receiving student and accept or reject it.
 5. After acceptance, either participant can rate the other once.
 6. Log in as the administrator to inspect data and manage accounts.
-
-## Project limits
-
-This is an educational console project. It uses a maximum of 100 students and stores passwords in plain text for simplicity; a production system must use secure password hashing, a database, access logging, and stronger authorization controls.
